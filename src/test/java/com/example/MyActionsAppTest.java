@@ -48,29 +48,15 @@ public class MyActionsAppTest {
     String responseJson = future.get();
     assertEquals(expectedResponse, responseJson);
   }
-
-  @Test
-  public void testWelcomeUsingMockRequestBuilder() {
-    MyActionsApp app = new MyActionsApp();
-    MockRequestBuilder rb = MockRequestBuilder.PreBuilt.welcome("welcome", true);
-    ActionRequest request = rb.build();
-
-    ActionResponse response = app.welcome(request);
-    assertTrue(response.getExpectUserResponse());
-    assertEquals(1, response.getRichResponse().getItems().size());
-  }
-
-  @Test
-  public void testBye() {
-    MyActionsApp app = new MyActionsApp();
-    MockRequestBuilder rb = new MockRequestBuilder();
-    rb.setIntent("bye");
-    rb.setUsesDialogflow(true);
-
-    ActionRequest request = rb.build();
-    ActionResponse response = app.bye(request);
-
-    assertFalse(response.getExpectUserResponse());
-    assertEquals(1, response.getRichResponse().getItems().size());
-  }
+//
+//  @Test
+//  public void testWelcomeUsingMockRequestBuilder() {
+//    MyActionsApp app = new MyActionsApp();
+//    MockRequestBuilder rb = MockRequestBuilder.PreBuilt.welcome("welcome", true);
+//    ActionRequest request = rb.build();
+//
+//    ActionResponse response = app.getCustomerByBookingNumber(request);
+//    assertTrue(response.getExpectUserResponse());
+//    assertEquals(1, response.getRichResponse().getItems().size());
+//  }
 }

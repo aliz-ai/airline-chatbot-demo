@@ -16,14 +16,20 @@
 
 package com.example;
 
+import com.example.model.Flight;
 import com.google.actions.api.ActionRequest;
 import com.google.actions.api.ActionResponse;
 import com.google.actions.api.DialogflowApp;
 import com.google.actions.api.ForIntent;
 import com.google.actions.api.response.ResponseBuilder;
+import com.google.api.services.actions_fulfillment.v2.model.Suggestion;
 import com.google.api.services.actions_fulfillment.v2.model.User;
+
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+
+import com.google.cloud.datastore.Datastore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,33 +39,64 @@ import org.slf4j.LoggerFactory;
  */
 public class MyActionsApp extends DialogflowApp {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MyActionsApp.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MyActionsApp.class);
 
-  @ForIntent("Default Welcome Intent")
-  public ActionResponse welcome(ActionRequest request) {
-    LOGGER.info("Welcome intent start.");
-    ResponseBuilder responseBuilder = getResponseBuilder(request);
-    ResourceBundle rb = ResourceBundle.getBundle("resources");
-    User user = request.getUser();
+    private DatastoreService datastoreService = new DatastoreService();
 
-    if (user != null && user.getLastSeen() != null) {
-      responseBuilder.add(rb.getString("welcome_back"));
-    } else {
-      responseBuilder.add(rb.getString("welcome"));
+    @ForIntent("give_booking_number")
+    public ActionResponse getCustomerByBookingNumber(ActionRequest request) {
+        String prompt = "";
+
+        ResponseBuilder responseBuilder = getResponseBuilder(request);
+        String bookingNumber = (String) request.getParameter("bookingnumber");
+
+        Suggestion suggestion = new Suggestion();
+        Suggestion suggestion2 = new Suggestion();
+        suggestion.setTitle("Cancel my flight");
+        suggestion2.setTitle("Change the flight");
+
+        try {
+            String customer = datastoreService.checkBookingNumber(bookingNumber);
+            prompt = String.format("Thanks. Hello %s! How can I help you?", customer);
+            datastoreService.saveCustomerAndConversationId(request, bookingNumber);
+            responseBuilder.add(prompt).add(suggestion).add(suggestion2);
+        } catch (Exception e) {
+            prompt = String.format("There is no booking number matching: %s! Please try again", bookingNumber);
+            responseBuilder.add(prompt);
+        } finally {
+            return responseBuilder.build();
+        }
     }
 
-    LOGGER.info("Welcome intent end.");
-    return responseBuilder.build();
-  }
+    @ForIntent("give_booking_number - modify")
+    public ActionResponse getFlightWithSameDirection(ActionRequest request) {
+        ResponseBuilder responseBuilder = getResponseBuilder(request);
+        List<Flight> flights = datastoreService.getFlights(request);
 
-  @ForIntent("bye")
-  public ActionResponse bye(ActionRequest request) {
-    LOGGER.info("Bye intent start.");
-    ResponseBuilder responseBuilder = getResponseBuilder(request);
-    ResourceBundle rb = ResourceBundle.getBundle("resources");
+        String prompt = "Ok. I can reschedule your flight for a 100 euro fee. Here are the available date options. Please choose one of them.";
+        responseBuilder.add(prompt);
 
-    responseBuilder.add(rb.getString("bye")).endConversation();
-    LOGGER.info("Bye intent end.");
-    return responseBuilder.build();
-  }
+        for (Flight flight : flights) {
+            Suggestion suggestion = new Suggestion();
+            suggestion.setTitle(flight.getFlight_number() + " " + flight.getDate());
+            responseBuilder.add(suggestion);
+        }
+        return responseBuilder.build();
+    }
+
+    @ForIntent("give_booking_number - modify - confirmation")
+    public ActionResponse modifyFlightDate(ActionRequest request) {
+        String prompt = "";
+        ResponseBuilder responseBuilder = getResponseBuilder(request);
+        String fightNumber = (String) request.getParameter("flight_number");
+
+        try {
+            datastoreService.modifyFlight(request,fightNumber);
+            prompt = "Ok. I modified your flight for the chosen date. I sent you a confirmation in email. Thanks for contacting the Airline Chatbot. Have a nice day, bye!";
+        } catch (Exception e) {
+            prompt = "Something went wrong with your flight modification. Please try again later, or call our customer service.";
+        }finally {
+            return responseBuilder.add(prompt).build();
+        }
+    }
 }
