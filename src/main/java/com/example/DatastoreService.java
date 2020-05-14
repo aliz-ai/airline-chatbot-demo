@@ -81,6 +81,10 @@ public class DatastoreService {
         return entity.getString("flight").toUpperCase().replaceAll("\\s+", "");
     }
 
+    public String cancelFlight(ActionRequest request) {
+        return getBookingNumberByConversationId(request);
+    }
+
     private void updateDatabase(Entity entity) {
         datastore.update(entity);
     }
