@@ -26,6 +26,7 @@ import com.google.api.services.actions_fulfillment.v2.model.Suggestion;
 import com.google.api.services.actions_fulfillment.v2.model.User;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -48,7 +49,7 @@ public class MyActionsApp extends DialogflowApp {
         String prompt = "";
 
         ResponseBuilder responseBuilder = getResponseBuilder(request);
-        String bookingNumber = (String) request.getParameter("bookingnumber");
+        String bookingNumber = ((String) Objects.requireNonNull(request.getParameter("bookingnumber"))).toUpperCase();
 
         Suggestion suggestion = new Suggestion();
         Suggestion suggestion2 = new Suggestion();
@@ -88,15 +89,15 @@ public class MyActionsApp extends DialogflowApp {
     public ActionResponse modifyFlightDate(ActionRequest request) {
         String prompt = "";
         ResponseBuilder responseBuilder = getResponseBuilder(request);
-        String fightNumber = (String) request.getParameter("flight_number");
+        String fightNumber = ((String) request.getParameter("flight_number")).toUpperCase().replaceAll("\\s+","");
 
         try {
-            datastoreService.modifyFlight(request,fightNumber);
+            datastoreService.modifyFlight(request, fightNumber);
             prompt = "Ok. I modified your flight for the chosen date. I sent you a confirmation in email. Thanks for contacting the Airline Chatbot. Have a nice day, bye!";
         } catch (Exception e) {
             prompt = "Something went wrong with your flight modification. Please try again later, or call our customer service.";
         }finally {
-            return responseBuilder.add(prompt).build();
+            return responseBuilder.add(prompt).endConversation().build();
         }
     }
 }

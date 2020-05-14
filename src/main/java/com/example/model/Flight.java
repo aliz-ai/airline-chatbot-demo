@@ -10,19 +10,19 @@ public class Flight {
 
     private String to;
 
-    private Timestamp date;
+    private String date;
 
     private Long free_seat;
 
     public Flight() {
     }
 
-    public Flight(String flight_number, Timestamp date) {
+    public Flight(String flight_number, String date) {
         this.flight_number = flight_number;
         this.date = date;
     }
 
-    public Flight(String flight_number, String from, String to, Timestamp date, Long free_seat) {
+    public Flight(String flight_number, String from, String to, String date, Long free_seat) {
         this.flight_number = flight_number;
         this.from = from;
         this.to = to;
@@ -54,11 +54,11 @@ public class Flight {
         this.to = to;
     }
 
-    public Timestamp getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Timestamp date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

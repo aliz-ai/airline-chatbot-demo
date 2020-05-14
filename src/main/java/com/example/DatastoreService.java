@@ -50,7 +50,7 @@ public class DatastoreService {
     }
 
     public List<Flight> getFlightDatesByDirection(Direction direction) {
-        List<Flight> dates = new ArrayList<>();
+        List<Flight> flights = new ArrayList<>();
         Query<Entity> query = Query.newEntityQueryBuilder()
                 .setNamespace(CHATBOT_NAMESPACE)
                 .setKind(FLIGHT_KIND)
@@ -58,27 +58,27 @@ public class DatastoreService {
                         StructuredQuery.PropertyFilter.eq("to", direction.getTo())))
                 .build();
 
-        datastore.run(query).forEachRemaining(flight -> dates.add(new Flight(flight.getString("fight_number"), flight.getTimestamp("date"))));
-        return dates;
+        datastore.run(query).forEachRemaining(flight -> flights.add(new Flight(flight.getString("flight_number"), flight.getString("date"))));
+        return flights;
     }
 
-    private void modifyFlights(String oldFlightNumber, String newFlightNumber) {
+    public void modifyFlights(String oldFlightNumber, String newFlightNumber) {
         Entity entityAddSeat = getFlight(newFlightNumber);
         Entity entityReduceSeat = getFlight(oldFlightNumber);
-        Flight flightToAdd = new Flight(newFlightNumber, entityAddSeat.getString("from"), entityAddSeat.getString("to"),
-                entityAddSeat.getTimestamp("date"), entityAddSeat.getLong("free_seat") + 1);
-        Flight flightToReduce = new Flight(oldFlightNumber, entityReduceSeat.getString("from"), entityReduceSeat.getString("to"),
-                entityReduceSeat.getTimestamp("date"), entityReduceSeat.getLong("free_seat") - 1);
+        Flight flightToReduce = new Flight(newFlightNumber, entityAddSeat.getString("from"), entityAddSeat.getString("to"),
+                entityAddSeat.getString("date"), entityAddSeat.getLong("free_seat") - 1);
+        Flight flightToAdd = new Flight(oldFlightNumber, entityReduceSeat.getString("from"), entityReduceSeat.getString("to"),
+                entityReduceSeat.getString("date"), entityReduceSeat.getLong("free_seat") + 1);
 
         updateDatabase(createFlightEntity(flightToAdd));
         updateDatabase(createFlightEntity(flightToReduce));
     }
 
-    private String modifyCustomerFlightNumber(String bookingNumber, String newFlightNumber) {
+    public String modifyCustomerFlightNumber(String bookingNumber, String newFlightNumber) {
         Entity entity = getCustomer(bookingNumber);
         Customer modifiedCustomer = new Customer(bookingNumber, entity.getString("name"), newFlightNumber, entity.getString("email"));
         updateDatabase(createCustomerEntity(modifiedCustomer));
-        return entity.getString("flight");
+        return entity.getString("flight").toUpperCase().replaceAll("\\s+", "");
     }
 
     private void updateDatabase(Entity entity) {
@@ -92,7 +92,7 @@ public class DatastoreService {
                 .set("flight_number", flight.getFlight_number())
                 .set("from", flight.getFrom())
                 .set("to", flight.getTo())
-                .set("date", flight.getDate().toString())
+                .set("date", flight.getDate())
                 .set("free_seat", flight.getFree_seat())
                 .build();
 
