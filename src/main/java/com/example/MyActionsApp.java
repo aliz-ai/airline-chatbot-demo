@@ -17,20 +17,17 @@
 package com.example;
 
 import com.example.model.Flight;
+import com.example.service.DatastoreService;
 import com.google.actions.api.ActionRequest;
 import com.google.actions.api.ActionResponse;
 import com.google.actions.api.DialogflowApp;
 import com.google.actions.api.ForIntent;
 import com.google.actions.api.response.ResponseBuilder;
 import com.google.api.services.actions_fulfillment.v2.model.Suggestion;
-import com.google.api.services.actions_fulfillment.v2.model.User;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
-import com.google.cloud.datastore.Datastore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,9 +132,14 @@ public class MyActionsApp extends DialogflowApp {
 
     @ForIntent("give_booking_number - cancel - no modification")
     public ActionResponse cancelFlightAnyway(ActionRequest request) {
+        String prompt = "";
         ResponseBuilder responseBuilder = getResponseBuilder(request);
-        String bookingNumber = datastoreService.cancelFlight(request);
-        String prompt = String.format("I understand. In that case I cancel your booking under %s booking number. I send you a confirmation in email. Thanks for contacting the Airline Chatbot. Have a nice day, bye!", bookingNumber);
+        try {
+            String bookingNumber = datastoreService.cancelFlight(request);
+            prompt = String.format("I understand. In that case I cancel your booking under %s booking number. I send you a confirmation in email. Thanks for contacting the Airline Chatbot. Have a nice day, bye!", bookingNumber);
+        } catch (Exception e) {
+            prompt = "Something went wrong. Please try again later.";
+        }
 
         return responseBuilder.add(prompt).endConversation().build();
     }

@@ -1,14 +1,16 @@
 package com.example;
 
-import com.example.model.Direction;
-import com.example.model.Flight;
+import com.example.service.DatastoreService;
+import com.example.service.EmailService;
 import org.junit.Test;
 
-import java.util.List;
+import javax.mail.MessagingException;
 
 public class DatastoreTest {
 
     DatastoreService datastoreService = new DatastoreService();
+
+    EmailService emailService = new EmailService();
 
     @Test
     public void testDatastore() {
