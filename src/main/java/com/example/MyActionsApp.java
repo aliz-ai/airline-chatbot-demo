@@ -61,9 +61,9 @@ public class MyActionsApp extends DialogflowApp {
         } catch (Exception e) {
             prompt = String.format("There is no booking number matching: %s! Please try again", bookingNumber);
             responseBuilder.add(prompt);
-        } finally {
-            return responseBuilder.build();
         }
+
+        return responseBuilder.build();
     }
 
     @ForIntent("give_booking_number - modify")
@@ -79,7 +79,11 @@ public class MyActionsApp extends DialogflowApp {
             suggestion.setTitle(flight.getFlight_number() + " " + flight.getDate());
             responseBuilder.add(suggestion);
         }
-        return responseBuilder.build();
+
+        Suggestion suggestion = new Suggestion();
+        suggestion.setTitle("Cancel my flight anyway.");
+
+        return responseBuilder.add(suggestion).build();
     }
 
     @ForIntent("give_booking_number - cancel - modification")
@@ -95,6 +99,7 @@ public class MyActionsApp extends DialogflowApp {
             suggestion.setTitle(flight.getFlight_number() + " " + flight.getDate());
             responseBuilder.add(suggestion);
         }
+
         return responseBuilder.build();
     }
 
@@ -102,32 +107,32 @@ public class MyActionsApp extends DialogflowApp {
     public ActionResponse modifyFlightDate(ActionRequest request) {
         String prompt = "";
         ResponseBuilder responseBuilder = getResponseBuilder(request);
-        String fightNumber = ((String) request.getParameter("flight_number")).toUpperCase().replaceAll("\\s+","");
+        String fightNumber = ((String) request.getParameter("flight_number")).toUpperCase().replaceAll("\\s+", "");
 
         try {
             datastoreService.modifyFlight(request, fightNumber);
             prompt = "Ok. I modified your flight for the chosen date. I sent you a confirmation in email. Thanks for contacting the Airline Chatbot. Have a nice day, bye!";
         } catch (Exception e) {
             prompt = "Something went wrong with your flight modification. Please try again later, or call our customer service.";
-        }finally {
-            return responseBuilder.add(prompt).endConversation().build();
         }
+
+        return responseBuilder.add(prompt).endConversation().build();
     }
 
     @ForIntent("give_booking_number - cancel - modification - confirmation")
     public ActionResponse modifyFlightDateWithDiscount(ActionRequest request) {
         String prompt = "";
         ResponseBuilder responseBuilder = getResponseBuilder(request);
-        String fightNumber = ((String) request.getParameter("flight_number")).toUpperCase().replaceAll("\\s+","");
+        String fightNumber = ((String) request.getParameter("flight_number")).toUpperCase().replaceAll("\\s+", "");
 
         try {
             datastoreService.modifyFlight(request, fightNumber);
             prompt = "Ok. I modified your flight for the chosen date. I sent you a confirmation in email. Thanks for contacting the Airline Chatbot. Have a nice day, bye!";
         } catch (Exception e) {
             prompt = "Something went wrong with your flight modification. Please try again later, or call our customer service.";
-        }finally {
-            return responseBuilder.add(prompt).endConversation().build();
         }
+
+        return responseBuilder.add(prompt).endConversation().build();
     }
 
     @ForIntent("give_booking_number - cancel - no modification")

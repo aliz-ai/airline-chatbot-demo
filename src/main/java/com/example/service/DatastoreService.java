@@ -49,7 +49,7 @@ public class DatastoreService {
         String bookingNumber = getBookingNumberByConversationId(request);
         String flightNumber = getCustomer(bookingNumber).getString(FLIGHT_KIND);
         Entity results = getFlight(flightNumber);
-        return getFlightDatesByDirection( new Direction(results.getString(FROM), results.getString(TO)));
+        return getFlightDatesByDirection( new Direction(results.getString(FROM), results.getString(TO)), flightNumber);
     }
 
     public void modifyFlight(ActionRequest request, String newFlightNumber) throws MessagingException {
@@ -134,7 +134,7 @@ public class DatastoreService {
         return datastore.run(query).next().getString(BOOKING_NUMBER);
     }
 
-    private List<Flight> getFlightDatesByDirection(Direction direction) {
+    private List<Flight> getFlightDatesByDirection(Direction direction, String flightNumber) {
         List<Flight> flights = new ArrayList<>();
         Query<Entity> query = Query.newEntityQueryBuilder()
                 .setNamespace(CHATBOT_NAMESPACE)
@@ -143,7 +143,12 @@ public class DatastoreService {
                         StructuredQuery.PropertyFilter.eq(TO, direction.getTo())))
                 .build();
 
-        datastore.run(query).forEachRemaining(flight -> flights.add(new Flight(flight.getString(FLIGHT_NUMBER), flight.getString(DATE))));
+        datastore.run(query).forEachRemaining(flight ->{
+            if(!flight.getString(FLIGHT_NUMBER).equals(flightNumber)){
+                flights.add(new Flight(flight.getString(FLIGHT_NUMBER), flight.getString(DATE)));
+            }
+        });
+
         return flights;
     }
 
