@@ -23,11 +23,17 @@ import com.google.actions.api.ActionResponse;
 import com.google.actions.api.DialogflowApp;
 import com.google.actions.api.ForIntent;
 import com.google.actions.api.response.ResponseBuilder;
+import com.google.api.client.util.Lists;
+import com.google.api.services.actions_fulfillment.v2.model.RichResponse;
 import com.google.api.services.actions_fulfillment.v2.model.Suggestion;
 
 import java.util.List;
 import java.util.Objects;
 
+import com.google.api.services.dialogflow_fulfillment.v2.model.IntentMessage;
+import com.google.api.services.dialogflow_fulfillment.v2.model.IntentMessageQuickReplies;
+import com.google.api.services.dialogflow_fulfillment.v2.model.IntentMessageText;
+import com.google.api.services.dialogflow_fulfillment.v2.model.WebhookResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +54,12 @@ public class MyActionsApp extends DialogflowApp {
         ResponseBuilder responseBuilder = getResponseBuilder(request);
         String bookingNumber = ((String) Objects.requireNonNull(request.getParameter("bookingnumber"))).toUpperCase();
 
+        WebhookResponse webhookResponse = new WebhookResponse();
+        List<IntentMessage> fulfillmentMessages = Lists.newArrayList();
+        IntentMessage im = new IntentMessage();
+        IntentMessageQuickReplies qr = new IntentMessageQuickReplies();
+        List<String> l = Lists.newArrayList();
+
         Suggestion suggestion = new Suggestion();
         Suggestion suggestion2 = new Suggestion();
         suggestion.setTitle("Cancel my flight");
@@ -58,6 +70,14 @@ public class MyActionsApp extends DialogflowApp {
             prompt = String.format("Thanks. Hello %s! How can I help you?", customer);
             datastoreService.saveCustomerAndConversationId(request, bookingNumber);
             responseBuilder.add(prompt).add(suggestion).add(suggestion2);
+            l.add("Cancel my flight");
+            l.add("Change the flight");
+            qr.setQuickReplies(l);
+            im.setQuickReplies(qr);
+            im.set(String.format("Thanks. Hello %s! How can I help you?", customer), "text");
+            fulfillmentMessages.add(im);
+            webhookResponse.setFulfillmentMessages(fulfillmentMessages);
+            responseBuilder.setWebhookResponse$actions_on_google(webhookResponse);
         } catch (Exception e) {
             prompt = String.format("There is no booking number matching: %s! Please try again", bookingNumber);
             responseBuilder.add(prompt);
@@ -74,14 +94,27 @@ public class MyActionsApp extends DialogflowApp {
         String prompt = "Ok. I can reschedule your flight for a 100 euro fee. Here are the available date options. Please choose one of them.";
         responseBuilder.add(prompt);
 
+        WebhookResponse webhookResponse = new WebhookResponse();
+        List<IntentMessage> fulfillmentMessages = Lists.newArrayList();
+        IntentMessage im = new IntentMessage();
+        IntentMessageQuickReplies qr = new IntentMessageQuickReplies();
+        List<String> l = Lists.newArrayList();
+
         for (Flight flight : flights) {
             Suggestion suggestion = new Suggestion();
             suggestion.setTitle(flight.getFlight_number() + " " + flight.getDate());
             responseBuilder.add(suggestion);
+            l.add(flight.getFlight_number() + " " + flight.getDate());
         }
+        qr.setQuickReplies(l);
+        im.setQuickReplies(qr);
+        fulfillmentMessages.add(im);
+        webhookResponse.setFulfillmentMessages(fulfillmentMessages);
+        responseBuilder.setWebhookResponse$actions_on_google(webhookResponse);
 
         Suggestion suggestion = new Suggestion();
         suggestion.setTitle("Cancel my flight anyway.");
+
 
         return responseBuilder.add(suggestion).build();
     }
@@ -94,11 +127,24 @@ public class MyActionsApp extends DialogflowApp {
         String prompt = "Ok. In that case I can offer you the modification of your flight for 70 euros instead of 100 euros. Here you can choose from the available dates.";
         responseBuilder.add(prompt);
 
+        WebhookResponse webhookResponse = new WebhookResponse();
+        List<IntentMessage> fulfillmentMessages = Lists.newArrayList();
+        IntentMessage im = new IntentMessage();
+        IntentMessageQuickReplies qr = new IntentMessageQuickReplies();
+        List<String> l = Lists.newArrayList();
+
         for (Flight flight : flights) {
             Suggestion suggestion = new Suggestion();
             suggestion.setTitle(flight.getFlight_number() + " " + flight.getDate());
             responseBuilder.add(suggestion);
+            l.add(flight.getFlight_number() + " " + flight.getDate());
         }
+
+        qr.setQuickReplies(l);
+        im.setQuickReplies(qr);
+        fulfillmentMessages.add(im);
+        webhookResponse.setFulfillmentMessages(fulfillmentMessages);
+        responseBuilder.setWebhookResponse$actions_on_google(webhookResponse);
 
         return responseBuilder.build();
     }

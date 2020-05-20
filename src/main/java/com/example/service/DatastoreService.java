@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.mail.MessagingException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -158,6 +159,7 @@ public class DatastoreService {
         Entity conversation = Entity.newBuilder(key)
                 .set(USER_ID, request.getSessionId())
                 .set(BOOKING_NUMBER, bookingNumber)
+                .set(DATE, LocalDateTime.now().toString())
                 .build();
 
         return conversation;
