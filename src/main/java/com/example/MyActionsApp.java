@@ -31,9 +31,15 @@ import java.util.List;
 import java.util.Objects;
 
 import com.google.api.services.dialogflow_fulfillment.v2.model.IntentMessage;
+import com.google.api.services.dialogflow_fulfillment.v2.model.IntentMessageBasicCardButton;
+import com.google.api.services.dialogflow_fulfillment.v2.model.IntentMessageCard;
+import com.google.api.services.dialogflow_fulfillment.v2.model.IntentMessageCardButton;
+import com.google.api.services.dialogflow_fulfillment.v2.model.IntentMessageImage;
 import com.google.api.services.dialogflow_fulfillment.v2.model.IntentMessageQuickReplies;
+import com.google.api.services.dialogflow_fulfillment.v2.model.IntentMessageTableCard;
 import com.google.api.services.dialogflow_fulfillment.v2.model.IntentMessageText;
 import com.google.api.services.dialogflow_fulfillment.v2.model.WebhookResponse;
+import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,33 +59,35 @@ public class MyActionsApp extends DialogflowApp {
 
         ResponseBuilder responseBuilder = getResponseBuilder(request);
         String bookingNumber = ((String) Objects.requireNonNull(request.getParameter("bookingnumber"))).toUpperCase();
+        String customer = "";
 
         WebhookResponse webhookResponse = new WebhookResponse();
         List<IntentMessage> fulfillmentMessages = Lists.newArrayList();
         IntentMessage im = new IntentMessage();
         IntentMessageQuickReplies qr = new IntentMessageQuickReplies();
         List<String> l = Lists.newArrayList();
+        l.add("Cancel my flight");
+        l.add("Change the flight");
+        qr.setQuickReplies(l);
 
         Suggestion suggestion = new Suggestion();
         Suggestion suggestion2 = new Suggestion();
         suggestion.setTitle("Cancel my flight");
         suggestion2.setTitle("Change the flight");
 
+
         try {
-            String customer = datastoreService.checkBookingNumber(bookingNumber);
+            customer = datastoreService.checkBookingNumber(bookingNumber);
             prompt = String.format("Thanks. Hello %s! How can I help you?", customer);
             datastoreService.saveCustomerAndConversationId(request, bookingNumber);
             responseBuilder.add(prompt).add(suggestion).add(suggestion2);
-            l.add("Cancel my flight");
-            l.add("Change the flight");
-            qr.setQuickReplies(l);
+            qr.setTitle(prompt);
             im.setQuickReplies(qr);
-            im.set(String.format("Thanks. Hello %s! How can I help you?", customer), "text");
             fulfillmentMessages.add(im);
             webhookResponse.setFulfillmentMessages(fulfillmentMessages);
             responseBuilder.setWebhookResponse$actions_on_google(webhookResponse);
         } catch (Exception e) {
-            prompt = String.format("There is no booking number matching: %s! Please try again", bookingNumber);
+            prompt = String.format("There is no booking number matching: %s! Please try again.", bookingNumber);
             responseBuilder.add(prompt);
         }
 
@@ -96,19 +104,29 @@ public class MyActionsApp extends DialogflowApp {
 
         WebhookResponse webhookResponse = new WebhookResponse();
         List<IntentMessage> fulfillmentMessages = Lists.newArrayList();
-        IntentMessage im = new IntentMessage();
-        IntentMessageQuickReplies qr = new IntentMessageQuickReplies();
-        List<String> l = Lists.newArrayList();
+        List<IntentMessageCardButton> buttons = Lists.newArrayList();
+
+        IntentMessage intentMessage = new IntentMessage();
+        IntentMessageCard tableCard = new IntentMessageCard();
+
+        tableCard.setImageUri("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Wizz_Air_logo.svg/1280px-Wizz_Air_logo.svg.png");
+        tableCard.setSubtitle("team");
+        tableCard.setTitle("Wizz air");
 
         for (Flight flight : flights) {
             Suggestion suggestion = new Suggestion();
             suggestion.setTitle(flight.getFlight_number() + " " + flight.getDate());
             responseBuilder.add(suggestion);
-            l.add(flight.getFlight_number() + " " + flight.getDate());
+
+            IntentMessageCardButton button = new IntentMessageCardButton();
+            button.setText(flight.getFlight_number() + " " + flight.getDate());
+            button.setPostback(flight.getFlight_number() + " " + flight.getDate());
+            buttons.add(button);
         }
-        qr.setQuickReplies(l);
-        im.setQuickReplies(qr);
-        fulfillmentMessages.add(im);
+        
+        tableCard.setButtons(buttons);
+        intentMessage.setCard(tableCard);
+        fulfillmentMessages.add(intentMessage);
         webhookResponse.setFulfillmentMessages(fulfillmentMessages);
         responseBuilder.setWebhookResponse$actions_on_google(webhookResponse);
 
@@ -129,20 +147,29 @@ public class MyActionsApp extends DialogflowApp {
 
         WebhookResponse webhookResponse = new WebhookResponse();
         List<IntentMessage> fulfillmentMessages = Lists.newArrayList();
-        IntentMessage im = new IntentMessage();
-        IntentMessageQuickReplies qr = new IntentMessageQuickReplies();
-        List<String> l = Lists.newArrayList();
+        List<IntentMessageCardButton> buttons = Lists.newArrayList();
+
+        IntentMessage intentMessage = new IntentMessage();
+        IntentMessageCard tableCard = new IntentMessageCard();
+
+        tableCard.setImageUri("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Wizz_Air_logo.svg/1280px-Wizz_Air_logo.svg.png");
+        tableCard.setSubtitle("team");
+        tableCard.setTitle("Wizz air");
 
         for (Flight flight : flights) {
             Suggestion suggestion = new Suggestion();
             suggestion.setTitle(flight.getFlight_number() + " " + flight.getDate());
             responseBuilder.add(suggestion);
-            l.add(flight.getFlight_number() + " " + flight.getDate());
-        }
 
-        qr.setQuickReplies(l);
-        im.setQuickReplies(qr);
-        fulfillmentMessages.add(im);
+            IntentMessageCardButton button = new IntentMessageCardButton();
+            button.setText(flight.getFlight_number() + " " + flight.getDate());
+            button.setPostback(flight.getFlight_number() + " " + flight.getDate());
+            buttons.add(button);
+        }
+        tableCard.setButtons(buttons);
+
+        intentMessage.setCard(tableCard);
+        fulfillmentMessages.add(intentMessage);
         webhookResponse.setFulfillmentMessages(fulfillmentMessages);
         responseBuilder.setWebhookResponse$actions_on_google(webhookResponse);
 

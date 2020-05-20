@@ -6,6 +6,7 @@ import com.example.model.Direction;
 import com.example.model.Flight;
 import com.google.actions.api.ActionRequest;
 import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.DatastoreException;
 import com.google.cloud.datastore.DatastoreOptions;
 import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.Key;
@@ -62,7 +63,14 @@ public class DatastoreService {
     }
 
     public void saveCustomerAndConversationId(ActionRequest request, String bookingNumber) {
-        datastore.add(createConversationEntity(request, bookingNumber));
+        Entity conversation = createConversationEntity(request, bookingNumber);
+        try {
+            datastore.add(conversation);
+        } catch (DatastoreException e) {
+            if ("ALREADY_EXISTS".equals(e.getReason())) {
+                datastore.update(conversation);
+            }
+        }
     }
 
     public String cancelFlight(ActionRequest request) throws MessagingException {
