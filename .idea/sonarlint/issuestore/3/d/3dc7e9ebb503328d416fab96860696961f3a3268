@@ -1,6 +1,6 @@
 
-m	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ν½ΎΜ8βευ΅.
-r	java:S117#"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(­Υ„αϊÿÿÿÿ8βευ΅.
-z	java:S116"YRename this field "booking_number" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ύ ζόÿÿÿÿ8βευ΅.
-j	java:S100"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(§‰β8βευ΅.
-o	java:S100#"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(­Υ„αϊÿÿÿÿ8βευ΅.
+k	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ν½ΎΜ8βευ΅.
+m	java:S100"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(­Υ„αϊÿÿÿÿ8βευ΅.
+h	java:S100"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(§‰β8βευ΅.
+x	java:S116"YRename this field "booking_number" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ύ ζόÿÿÿÿ8βευ΅.
+p	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(­Υ„αϊÿÿÿÿ8βευ΅.

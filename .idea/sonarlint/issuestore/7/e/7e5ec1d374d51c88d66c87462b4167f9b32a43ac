@@ -1,5 +1,27 @@
 
-~
-java:S4144{"aUpdate this method so that its implementation is not identical to "modifyFlightDate" on line 107.(È„¾„8ØÛó¶¡.
+{
+java:S1128"^Remove this unused import 'com.google.api.services.actions_fulfillment.v2.model.RichResponse'.(»Ÿµ8…€Ã…£.
+y
+java:S1128"WRemove this unused import 'com.google.api.services.actions_fulfillment.v2.model.Image'.(Şßœ¨øÿÿÿÿ8î¤ï³£.
+“
+java:S1128("qRemove this unused import 'com.google.api.services.dialogflow_fulfillment.v2.model.IntentMessageBasicCardButton'.(Ù–Æçşÿÿÿÿ8ÍĞ £.
+
+java:S4144Û"aUpdate this method so that its implementation is not identical to "modifyFlightDate" on line 203.(È„¾„8…€Ã…£.
+z
+java:S1128"]Remove this unused import 'com.google.api.services.actions_fulfillment.v2.model.AppResponse'.(Çëüì8‚·›”£.
+y
+java:S1128&"\Remove this unused import 'com.google.api.services.dialogflow_fulfillment.v2.model.Context'.(‰–›¹8¶Ô¯“£.
+u
+java:S1128"XRemove this unused import 'com.google.api.services.actions_fulfillment.v2.model.Button'.(èã±È8“ñ³£.
+}
+java:S1128"[Remove this unused import 'com.google.api.services.actions_fulfillment.v2.model.BasicCard'.(ÑİÔĞùÿÿÿÿ8şíî³£.
+„
+java:S1128+"gRemove this unused import 'com.google.api.services.dialogflow_fulfillment.v2.model.IntentMessageImage'.(³óúÃ8Åå›£.
+
+java:S1128-"kRemove this unused import 'com.google.api.services.dialogflow_fulfillment.v2.model.IntentMessageTableCard'.(©ƒ¾Ùúÿÿÿÿ8âß™£.
 L
-java:S1068("*Remove this unused "LOGGER" private field.(€§İÔşÿÿÿÿ8§Æ–™¡.
+java:S1068:"*Remove this unused "LOGGER" private field.(€§İÔşÿÿÿÿ8Ùì”†£.
+x
+java:S1128%"[Remove this unused import 'com.google.api.services.actions_fulfillment.v2.model.TableCard'.(å…Çú8«§ü²£.
+N
+java:S11280"1Remove this unused import 'com.google.gson.Gson'.(–§8‘ÿ£.

@@ -24,12 +24,18 @@ import com.google.actions.api.DialogflowApp;
 import com.google.actions.api.ForIntent;
 import com.google.actions.api.response.ResponseBuilder;
 import com.google.api.client.util.Lists;
+import com.google.api.services.actions_fulfillment.v2.model.AppResponse;
+import com.google.api.services.actions_fulfillment.v2.model.BasicCard;
+import com.google.api.services.actions_fulfillment.v2.model.Button;
+import com.google.api.services.actions_fulfillment.v2.model.Image;
 import com.google.api.services.actions_fulfillment.v2.model.RichResponse;
 import com.google.api.services.actions_fulfillment.v2.model.Suggestion;
 
 import java.util.List;
 import java.util.Objects;
 
+import com.google.api.services.actions_fulfillment.v2.model.TableCard;
+import com.google.api.services.dialogflow_fulfillment.v2.model.Context;
 import com.google.api.services.dialogflow_fulfillment.v2.model.IntentMessage;
 import com.google.api.services.dialogflow_fulfillment.v2.model.IntentMessageBasicCardButton;
 import com.google.api.services.dialogflow_fulfillment.v2.model.IntentMessageCard;
@@ -105,12 +111,20 @@ public class MyActionsApp extends DialogflowApp {
         WebhookResponse webhookResponse = new WebhookResponse();
         List<IntentMessage> fulfillmentMessages = Lists.newArrayList();
         List<IntentMessageCardButton> buttons = Lists.newArrayList();
+        List<String> texts = Lists.newArrayList();
+
+        texts.add(prompt);
 
         IntentMessage intentMessage = new IntentMessage();
+        IntentMessage intentMessage1 = new IntentMessage();
+        IntentMessageText text = new IntentMessageText();
+        text.setText(texts);
+        intentMessage1.setText(text);
+
         IntentMessageCard tableCard = new IntentMessageCard();
 
         tableCard.setImageUri("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Wizz_Air_logo.svg/1280px-Wizz_Air_logo.svg.png");
-        tableCard.setSubtitle("team");
+        tableCard.setSubtitle("Team");
         tableCard.setTitle("Wizz air");
 
         for (Flight flight : flights) {
@@ -123,9 +137,10 @@ public class MyActionsApp extends DialogflowApp {
             button.setPostback(flight.getFlight_number() + " " + flight.getDate());
             buttons.add(button);
         }
-        
+
         tableCard.setButtons(buttons);
         intentMessage.setCard(tableCard);
+        fulfillmentMessages.add(intentMessage1);
         fulfillmentMessages.add(intentMessage);
         webhookResponse.setFulfillmentMessages(fulfillmentMessages);
         responseBuilder.setWebhookResponse$actions_on_google(webhookResponse);
@@ -148,12 +163,19 @@ public class MyActionsApp extends DialogflowApp {
         WebhookResponse webhookResponse = new WebhookResponse();
         List<IntentMessage> fulfillmentMessages = Lists.newArrayList();
         List<IntentMessageCardButton> buttons = Lists.newArrayList();
+        List<String> texts = Lists.newArrayList();
+
+        texts.add(prompt);
 
         IntentMessage intentMessage = new IntentMessage();
         IntentMessageCard tableCard = new IntentMessageCard();
+        IntentMessage intentMessage1 = new IntentMessage();
+        IntentMessageText text = new IntentMessageText();
+        text.setText(texts);
+        intentMessage1.setText(text);
 
         tableCard.setImageUri("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Wizz_Air_logo.svg/1280px-Wizz_Air_logo.svg.png");
-        tableCard.setSubtitle("team");
+        tableCard.setSubtitle("Team");
         tableCard.setTitle("Wizz air");
 
         for (Flight flight : flights) {
@@ -169,6 +191,7 @@ public class MyActionsApp extends DialogflowApp {
         tableCard.setButtons(buttons);
 
         intentMessage.setCard(tableCard);
+        fulfillmentMessages.add(intentMessage1);
         fulfillmentMessages.add(intentMessage);
         webhookResponse.setFulfillmentMessages(fulfillmentMessages);
         responseBuilder.setWebhookResponse$actions_on_google(webhookResponse);
